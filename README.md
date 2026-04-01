@@ -813,6 +813,9 @@ Add the CNAME records shown to Route 53. Terraform should do this automatically 
 **Fix:**
 1. Check `audience` and `issuer` in your JWT authorizer config match your identity provider
 2. Enable CORS on the HTTP API with `allow_origins = ["*"]` during development
+---
+
+<img width="1319" height="751" alt="image" src="https://github.com/user-attachments/assets/491b74a7-86a1-4a68-9e67-8f1577eaa982" />
 
 ---
 
