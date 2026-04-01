@@ -815,7 +815,7 @@ Add the CNAME records shown to Route 53. Terraform should do this automatically 
 2. Enable CORS on the HTTP API with `allow_origins = ["*"]` during development
 ---
 
-#The Output
+### The Output
 
 <img width="1319" height="751" alt="image" src="https://github.com/user-attachments/assets/491b74a7-86a1-4a68-9e67-8f1577eaa982" />
 
