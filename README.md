@@ -1,7 +1,7 @@
 # 🚀 Next.js on AWS — Complete Deployment Guide
 
-[![Deploy](https://github.com/your-org/your-repo/actions/workflows/deploy.yml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/deploy.yml)
-[![CI](https://github.com/your-org/your-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/ci.yml)
+[![Deploy](https://github.com/SUNKUSHANMUKH/smart-log-analyzer01/actions/workflows/deploy.yml/badge.svg)](https://github.com/SUNKUSHANMUKH/smart-log-analyzer01/actions/workflows/deploy.yml)
+[![CI](https://github.com/SUNKUSHANMUKH/smart-log-analyzer01/actions/workflows/ci.yml/badge.svg)](https://github.com/SUNKUSHANMUKH/smart-log-analyzer01/actions/workflows/ci.yml)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform_1.7+-7B42BC?logo=terraform)](https://www.terraform.io/)
 [![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazon-aws)](https://aws.amazon.com/)
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js-000000?logo=next.js)](https://nextjs.org/)
