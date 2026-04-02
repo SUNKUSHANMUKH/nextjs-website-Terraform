@@ -143,18 +143,56 @@ aws --version   # should print aws-cli/2.x.x
 
 ### Terraform (via tfenv)
 
+### 1. Install Homebrew (if not already installed)
+Open a terminal and run:
 ```bash
-# Install tfenv — manages Terraform versions, prevents version mismatch issues
-git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+After installation, add Homebrew to your PATH (the installer usually does this automatically). Verify:
+```bash
+brew --version
+```
 
-# Install and pin Terraform 1.7
+### 2. Install GNU grep
+```bash
+brew install grep
+```
+This installs `ggrep` (GNU grep) – but `tfenv` expects `grep` to be the GNU version.  
+To make GNU grep the default, add the following to your shell profile:
+
+For **zsh** (you're using zsh):
+```bash
+echo 'export PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+*If you're on an Intel Mac, the path might be `/usr/local/opt/grep/libexec/gnubin` – adjust accordingly.*
+
+### 3. Reinstall tfenv cleanly
+First, remove the previous tfenv directory:
+```bash
+rm -rf ~/.tfenv
+```
+
+Now clone and set up tfenv again:
+```bash
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 4. Install and use Terraform 1.7.5
+```bash
 tfenv install 1.7.5
 tfenv use 1.7.5
+```
 
-# Verify
-terraform --version   # should print Terraform v1.7.5
+### 5. Verify
+```bash
+terraform --version
+```
+You should see:
+```
+Terraform v1.7.5
 ```
 
 ---
@@ -775,6 +813,11 @@ Add the CNAME records shown to Route 53. Terraform should do this automatically 
 **Fix:**
 1. Check `audience` and `issuer` in your JWT authorizer config match your identity provider
 2. Enable CORS on the HTTP API with `allow_origins = ["*"]` during development
+---
+
+### The Output
+
+<img width="1319" height="751" alt="image" src="https://github.com/user-attachments/assets/491b74a7-86a1-4a68-9e67-8f1577eaa982" />
 
 ---
 
