@@ -210,7 +210,7 @@ CloudWatch (ECS + Lambda + API Gateway)
     CloudWatch Logs & Monitoring
 ```
 ---
-### Work Flow 
+## Work Flow 
 
 ```
 User (Browser / Mobile App)
@@ -257,7 +257,7 @@ Monitoring (in background):
 - Lambda logs → CloudWatch
 - API Gateway metrics → CloudWatch
 ```
-
+----
 
 ```
 
