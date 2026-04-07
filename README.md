@@ -85,9 +85,9 @@ A production-grade Next.js application hosted on AWS with:
 ```
 
 ---
-### Work Flow
+# Work Flow
 
-## Frontend Flow 
+### Frontend Flow 
 ```
 Developer → Push Frontend Code → GitHub
         ↓
@@ -110,7 +110,7 @@ ECR → ECS Service → ALB
 ```
 
 ----
-## Backend Flow 
+### Backend Flow 
 
 ```
 Developer → Push Backend Code → GitHub
@@ -131,7 +131,7 @@ Lambda ← API Gateway
 ```
 ---
 
-## Static File
+### Static File
 
 ```
 Developer → Push Static Files → GitHub
@@ -160,7 +160,7 @@ API Gateway → CloudWatch
 ```
 
 ---
-### Complete workflow:
+## Complete workflow:
 
 ```
 Developer writes code (Next.js + backend )
