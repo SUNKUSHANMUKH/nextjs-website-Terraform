@@ -12,22 +12,23 @@
 
 1. [What You're Building](#-what-youre-building)
 2. [Before You Start](#-before-you-start)
-3. [Step 1 — Install Required Tools](#step-1--install-required-tools)
-4. [Step 2 — Set Up Your AWS Account](#step-2--set-up-your-aws-account)
-5. [Step 3 — Clone & Configure the Repo](#step-3--clone--configure-the-repo)
-6. [Step 4 — Prepare Your Next.js App](#step-4--prepare-your-nextjs-app)
-7. [Step 5 — Bootstrap AWS Resources](#step-5--bootstrap-aws-resources)
-8. [Step 6 — Set GitHub Secrets](#step-6--set-github-secrets)
-9. [Step 7 — Deploy Infrastructure with Terraform](#step-7--deploy-infrastructure-with-terraform)
-10. [Step 8 — Trigger Your First Deployment](#step-8--trigger-your-first-deployment)
-11. [Step 9 — Verify Everything is Working](#step-9--verify-everything-is-working)
-12. [Architecture Reference](#-architecture-reference)
-13. [Project Structure](#-project-structure)
-14. [GitHub Actions Workflows](#-github-actions-workflows)
-15. [Critical Config Notes](#-critical-config-notes-dont-skip)
-16. [Common Issues & Fixes](#-common-issues--fixes)
-17. [Security Checklist](#-security-checklist)
-18. [Monthly Cost Estimate](#-monthly-cost-estimate)
+3. [Workflows](#Work-flow)
+4. [Step 1 — Install Required Tools](#step-1--install-required-tools)
+5. [Step 2 — Set Up Your AWS Account](#step-2--set-up-your-aws-account)
+6. [Step 3 — Clone & Configure the Repo](#step-3--clone--configure-the-repo)
+7. [Step 4 — Prepare Your Next.js App](#step-4--prepare-your-nextjs-app)
+8. [Step 5 — Bootstrap AWS Resources](#step-5--bootstrap-aws-resources)
+9. [Step 6 — Set GitHub Secrets](#step-6--set-github-secrets)
+10. [Step 7 — Deploy Infrastructure with Terraform](#step-7--deploy-infrastructure-with-terraform)
+11. [Step 8 — Trigger Your First Deployment](#step-8--trigger-your-first-deployment)
+12. [Step 9 — Verify Everything is Working](#step-9--verify-everything-is-working)
+13. [Architecture Reference](#-architecture-reference)
+14. [Project Structure](#-project-structure)
+15. [GitHub Actions Workflows](#-github-actions-workflows)
+16. [Critical Config Notes](#-critical-config-notes-dont-skip)
+17. [Common Issues & Fixes](#-common-issues--fixes)
+18. [Security Checklist](#-security-checklist)
+19. [Monthly Cost Estimate](#-monthly-cost-estimate)
 
 ---
 
@@ -81,6 +82,259 @@ A production-grade Next.js application hosted on AWS with:
 
   Background work:
   Lambda ──► SQS queue ──► SNS notifications
+```
+
+---
+# Work Flow
+
+### Frontend Flow 
+```
+Developer → Push Frontend Code → GitHub
+        ↓
+GitHub Actions (Frontend Pipeline)
+   - Install dependencies
+   - Build Next.js app
+   - Create Docker image
+   - Push to ECR
+        ↓
+ECS Service (Frontend)
+   - Pull image from ECR
+   - Run container
+        ↓
+Application Load Balancer
+
+```
+
+```
+ECR → ECS Service → ALB
+```
+
+----
+### Backend Flow 
+
+```
+Developer → Push Backend Code → GitHub
+        ↓
+GitHub Actions (Backend Pipeline)
+   - Install dependencies
+   - Zip Lambda code
+   - Deploy using Terraform / AWS CLI
+        ↓
+AWS Lambda Functions Updated
+        ↓
+API Gateway connected to Lambda
+
+```
+
+```
+Lambda ← API Gateway
+```
+---
+
+### Static File
+
+```
+Developer → Push Static Files → GitHub
+        ↓
+GitHub Actions (Static Pipeline)
+   - Upload files to S3
+   - Invalidate CloudFront cache
+        ↓
+S3 Bucket (Storage)
+        ↓
+CloudFront CDN (Fast Delivery)
+
+
+S3 → (used by ECS OR via CloudFront)
+```
+
+```
+Route53
+├── app.domain.com → ALB (ECS)
+├── api.domain.com → API Gateway
+
+
+ECS → CloudWatch
+Lambda → CloudWatch
+API Gateway → CloudWatch
+```
+
+---
+## Complete workflow:
+
+```
+Developer writes code (Next.js + backend )
+Developer
+   ↓
+GitHub Repo
+   ↓
+GitHub Actions
+   ├──────────────┬─────────────────┬─────────────────┬
+   ↓              ↓                 ↓                 ↓
+
+Frontend       Backend            Static             Infra
+(ECS)          (Lambda)            (S3)           (Terraform)
+
+   ↓              ↓                  ↓                 ↓
+
+  ECR         Lambda/ECS/EC2     S3 Bucket       AWS Infra Created
+   ↓              ↓
+ECS Service     API Gateway
+   ↓
+  ALB
+
+------------------------------------------------------
+
+                 Route53 (DNS)
+        ┌─────────┼─────────────┬
+        ↓         ↓             ↓
+
+      ALB     API Gateway   CloudFront
+       ↓          ↓             ↓
+      ECS       Lambda          S3
+
+------------------------------------------------------
+
+ECS (Frontend)
+   ↓
+calls API → https://api.domain.com
+   ↓
+API Gateway
+   ↓
+Lambda
+
+------------------------------------------------------
+
+Monitoring:
+CloudWatch (ECS + Lambda + API Gateway)
+    CloudWatch Logs & Monitoring
+```
+---
+## Work Flow 
+
+```
+User (Browser / Mobile App)
+   ↓
+Enters URL:
+https://app.domain.com
+   ↓
+Route53 (DNS Resolution)
+   ↓
+Application Load Balancer (ALB)
+   ↓
+ECS Service (Frontend - Next.js)
+   ↓
+Frontend UI loads in browser
+   ↓
+User performs action (login / fetch data / submit form)
+   ↓
+Frontend makes API call:
+https://api.domain.com
+   ↓
+Route53 resolves API domain
+   ↓
+API Gateway (receives request)
+   ↓
+Lambda Function (executes backend logic)
+   ↓
+Response → API Gateway
+   ↓
+Response → Frontend (ECS)
+   ↓
+Data displayed to User
+   ↓
+Static content (images/videos)
+   ↓
+Fetched via:
+CloudFront (CDN)
+   ↓
+S3 Bucket (storage)
+
+=====================================================
+
+Monitoring (in background):
+- ECS logs → CloudWatch
+- Lambda logs → CloudWatch
+- API Gateway metrics → CloudWatch
+```
+----
+
+```
+
+
+                         ┌──────────────────────────────┐
+                         │         DEVELOPER FLOW       │
+                         └──────────────────────────────┘
+
+Developer
+   ↓
+GitHub Repository (Frontend + Backend + Static + Terraform)
+   ↓
+GitHub Actions (CI/CD)
+   ├─────────────────────┬─────────────────────┬─────────────────────┬─────────────────────┐
+   ↓                     ↓                     ↓                     ↓
+
+Frontend               Backend               Static                Infra
+(ECS)                  (Lambda)               (S3)              (Terraform)
+
+   ↓                      ↓                    ↓                    ↓
+Docker Build          Zip Code              Upload S3        terraform apply
+Push → ECR           Deploy Lambda             ↓                    ↓
+   ↓                    ↓                   CloudFront         Creates: 
+ECS Service         API Gateway                 ↓                 - ECS Cluster
+   ↓                                            ↓                 - ALB
+Application                                     S3                - API Gateway
+Load Balancer                                                     - Lambda
+  (ALB)                                                           - Route53
+                                                                  - IAM Roles
+    
+=================================================================
+
+                         ┌──────────────────────────────┐
+                         │         USER FLOW            │
+                         └──────────────────────────────┘
+
+User (Browser)
+   ↓
+Route53 (DNS)
+   ├──────────────┬──────────────┬──────────────┐
+   ↓              ↓              ↓
+
+app.domain.com    api.domain.com   static.domain.com
+   ↓                   ↓              ↓
+
+ALB                API Gateway      CloudFront
+   ↓                   ↓              ↓
+  
+ECS                  Lambda           S3
+(Frontend)          (Backend)       (Assets)
+
+   ↓
+Frontend loads UI
+   ↓
+User action (click / request)
+   ↓
+Frontend calls API:
+https://api.domain.com
+   ↓
+API Gateway
+   ↓
+Lambda executes logic
+   ↓
+Response → API Gateway → ECS → User
+
+   ↓
+Static files loaded:
+CloudFront → S3
+
+=================================================================
+
+Monitoring:
+- ECS → CloudWatch Logs
+- Lambda → CloudWatch Logs
+- API Gateway → CloudWatch Metrics
+
+
 ```
 
 ---
