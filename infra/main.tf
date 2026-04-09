@@ -140,7 +140,7 @@ resource "aws_ecs_task_definition" "app" {
       # secrets = [
       #   {
       #     name      = "DATABASE_URL"
-      #     valueFrom = "arn:aws:secretsmanager:ap-south-1:ACCOUNT_ID:secret:myproject/db-url"
+      #     valueFrom = "  "
       #   }
       # ]
 
